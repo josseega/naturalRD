@@ -1,6 +1,5 @@
-\documentclass[10pt,letterpaper]{scrartcl}
-
-\usepackage[margin=0.5in]{geometry}
+\documentclass[10pt,letterpaper,twocolumn]{scrartcl}
+\usepackage[margin=0.9in]{geometry}
 
 
 \usepackage{lmodern}
@@ -10,23 +9,99 @@
 \usepackage{amssymb}
 \usepackage{graphicx}
 \usepackage{xcolor}
-\usepackage{import}
 
-\usepackage[inline]{showlabels}
+\usepackage[inner]{showlabels}
 
-%Figures of Inkscape
-\newcommand{\incfig}[2][1]{%
-    \def\svgwidth{#1\columnwidth}
-    \import{./figs/}{#2.pdf_tex}
-}
 
 %opening
-\title{ Robust tracking and stabilization via HOSMC for the Furuta's pendulum}
-\subtitle{ \textit{rev. 8 }}
-\author{J. Antonio Ortega}
+\title{Decoupling of a class of underactuated systems based on SMC Methogology}
+\subtitle{ \textit{rev. 1 }}
+\author{J.A. Ortega}
+
+% operators
+
+\DeclareMathOperator{\rank}{rank}
+
+%definitions
+\newcommand{\R}{\mathbb{R}}
+
+\newcommand{\blue}[1]{\textcolor{blue}{#1}}
+\newcommand{\red}[1]{\textcolor{red}{#1}}
+
+% Document
 
 \begin{document}
 
-    What's up
+\maketitle
+
+\section{Motivation}
+
+Consider the system
+
+\begin{equation} \tag{$\Sigma$} \label{eq:sys}
+    \dot{x} = A x + B u,\quad x \in \R^n, u \in \R^m
+\end{equation}
+
+\noindent with one-degree of underactuation i.e., $ n = m + 1 $, and $A: \R^n \to \R^n, \quad B: \R^m \to \R^n$ are constants.\\
+
+{Objective:} The goal is to design a sliding manifold $\sigma = C x$ to stabilize the system \eqref{eq:sys}.
+As requirement $\sigma$ needs to be relative degree complete, i.e.,  $n$ with reference to the output  $u$.\\
+The motivation of the objective is to solve the stabilization of a underactuated system in a simpler manner.
+The methodology have two main steps: Design a $n$-RD sliding manifold $\sigma$ then, propose a $n$-order Continuous Sliding Mode Controller to stabilize it.
+Note that, if the sliding-manifold has the same order that the system \eqref{eq:sys}, once $\sigma \equiv 0$ does not exist zero dynamics.
+
+\section{Decoupling based on SMC}
+
+First we define an output of the \eqref{eq:sys} as $s= C x$, s.t,
+\[
+    \dot{s} = C A x + C B u
+.\]
+\noindent in order to annihilate $CB$,
+
+\[
+    (CB)^\perp \dot{s} = (CB)^\perp C A x + \red{(CB)^\perp C B} u
+.\]
+\noindent which can be written as
+\[
+    \frac{d}{dt} \underbrace{\begin{bmatrix} (C B)^\perp & 0 \\ 0 & 1 \end{bmatrix}}_{J_1} \underbrace{\begin{bmatrix} s \\ \int s \, d \tau \end{bmatrix}}_{Y_1(t)} =  \underbrace{\begin{bmatrix} (CB)^\perp C A \\ C \end{bmatrix}}_{M_1} x(t)
+\]
+
+We continue computing the derivative of $\frac{d}{dt}J_1 Y_1(t) = M_1 x(t)$ in the same manner, until $\rank M_k = n$
+\[
+    \frac{d^2}{dt^2} J_1 Y_1(t) = M_1 A x + M_1 B u
+,\]
+\noindent then,
+\[
+    \frac{d^2}{dt^2} (M_1 B)^\perp J_1 Y_1(t) = (M_1 B)^\perp M_1 A x + \red{(M_1 B)^\perp M_1 B} u
+.\]
+\[
+    \frac{d^2}{dt^2} \underbrace{\begin{bmatrix} (M_1 B)^\perp (C B)^\perp & 0 \\ 0 & (M_1 B)^\perp \end{bmatrix}}_{(M_1 B)^\perp J_1} \begin{bmatrix} s \\ \int s \, d \tau \end{bmatrix}= (M_1 B)^\perp M_1 A x
+.\]
+
+That can be rewritten as
+\[
+    \frac{d^2}{dt^2} \underbrace{\begin{bmatrix} (M_1 B )^\perp J_1 & 0 \\ 0 & 1  \end{bmatrix}}_{J_2}   \begin{bmatrix} s \\ \int s \, d \tau \\ \int \int s \, d \tau dy \end{bmatrix}= \underbrace{\begin{bmatrix}  (M_1 B)^\perp M_1 A \\ C \end{bmatrix}}_{M_2} x
+.\]
+
+Following the same procedure we will arrive to a system of $n$-order,
+
+\begin{equation} \label{eq:compS}
+    \frac{d^n}{dt^n} J_{n-1} \underbrace{\begin{bmatrix} s \\ \int s \, d \tau \\ \vdots \\ \int \dots \int s \, d \tau dy \end{bmatrix}}_{Y_{n-1}} = M_{n-1} A x + M_{n-1} B u
+\end{equation}
+
+Notice that by construction $J_k , \, \forall \, k = 1, \dots , n-1$ is diagonal and therefore also invertible, so, we can write \eqref{eq:compS} as,
+
+\begin{equation}
+    \frac{d}{dt}\begin{bmatrix} s^{(n-1)} \\ \vdots \\ \dot{s} \\ s \end{bmatrix} = J^{-1} M_{n-1} \left[ A x + B u \right]
+\end{equation}
+
+\section{Furuta Pendulum Stabilization with LTI model}
+
+Consider the linearisation of the Furuta pendulum with the matrices
+\[
+    A = \begin{bmatrix} 0 & 0 & 1 & 0 \\ 0 & 0 & 0 & 1 \\ 0 & 80.3 & -45.8 & -0.93 \\ 0 & 122 & -44.1 & -1.4 \end{bmatrix}, \quad
+    B = \begin{bmatrix} 0 \\ 0 \\ 83.4 \\ 80.3 \end{bmatrix}
+.\]
 
 \end{document}
+
