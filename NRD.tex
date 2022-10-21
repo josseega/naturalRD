@@ -103,5 +103,34 @@ Consider the linearisation of the Furuta pendulum with the matrices
     B = \begin{bmatrix} 0 \\ 0 \\ 83.4 \\ 80.3 \end{bmatrix}
 .\]
 
+\[
+    \dot{s} = C A x + C B u 
+.\]
+
+\[
+    \frac{d}{dt} \begin{bmatrix} s \\ \int s \end{bmatrix}  = \begin{bmatrix} CA \\ C \end{bmatrix}  x
+.\]
+
+\[
+ \frac{d}{dt} Y_1(t) = M_1 x   
+.\]
+
+\[
+    \frac{d}{dt} \begin{bmatrix} s \\ \int s \end{bmatrix}= \begin{bmatrix} 0 & 0 & 3 & 10 \\ 3 & 10 & 0 & 0 \end{bmatrix}  x   
+.\]
+
+\[
+ \frac{d^2}{dt^2} Y_1(t) = M_1 A x + M_1 B u
+.\]
+
+\[
+    \frac{d^2}{dt^2} (M_1 B)^\perp Y_1(t) = (M_1 B)^\perp M_1 A x 
+.\]
+
+\[
+    \ddot{s} = C A^2 x + C A B
+.\]
+
+
 \end{document}
 

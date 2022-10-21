@@ -19,6 +19,8 @@ ca = C*A
 
 disp('Second Diff')
 
-ca2= ca*A
+M1 = [ca; C]
 
-cab = ca*B
+m1b=M1*B
+
+
