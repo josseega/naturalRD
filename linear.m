@@ -1,4 +1,5 @@
 %System
+pkg load control
 
 graphics_toolkit ("qt")
 
@@ -8,10 +9,6 @@ close all
 
 %% Parameters
 
-a=2;
-b=10;
-hal=2;
-hth=3;
 
 %
 
@@ -20,11 +17,28 @@ A = [0 0 1 0; 0 0 0 1; 0 80.3 -45.8 -0.930; 0 122 -44.1 -1.4];
 B = [0; 0; 83.4; 80.3];
 
 
-sigma= @(t,x) x(1) - (hal/hth)*x(3);
+a = poly(A);
 
-Dsigma= @(t,x) x(2) - (hal/hth)*x(4);
+Q = [a(4) a(3) a(2) a(1); a(3) a(2) a(1) 0; a(2) a(1) 0 0; a(1) 0 0 0];
 
-u = @(t,x) 0;
+ctr= [B A*B (A*A)*B (A*A*A)*B];
+
+T= inv(ctr*Q)
+
+At= T*A*inv(T)
+
+Bt= T*B
+
+At= cleanMatrix(At,1e-10)
+Bt= cleanMatrix(Bt,1e-10)
+
+P = [-3 -10 -7 -5];
+
+K= place(At,Bt,P)
+
+s = @(t,x) T*x;
+
+u = @(t,x) -K*s(t,x);
 
 %u = @(t,x) -10*sign(sigma(t,x)) - 3*sign(Dsigma(t,x)); 
 
@@ -33,9 +47,9 @@ F = @(t,x) A*x + B*u(t,x);
 %simulation parameters
 t0 = 0;
 st = 1e-3;
-tfinal = 1;
+tfinal = 10;
 
-y0 = [0 0 0 0]';
+y0 = [0.1 0.1 0.2 0]';
 
 %solve
 % madqe it to solve yp = F(t,y)
@@ -43,9 +57,6 @@ y0 = [0 0 0 0]';
 y = y0;
 yout = y;
 
-
-sigmaout = sigma(t0,y0);
-Dsigmaout = Dsigma(t0,y0);
 
 tauOut= u(t0,y0);
 
