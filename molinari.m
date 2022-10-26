@@ -55,6 +55,9 @@ nm2b*m2b
 
 M3 = [nm2b*m2a ; C]
 
+m3a = M3*A
+m3b = M3*B
+
 %
 %disp(' ')
 %disp('Third Diff = C A^3 x + C A^2 B u')
