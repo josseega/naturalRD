@@ -1,6 +1,6 @@
 %Init
 
-pkg load control
+%pkg load control
 
 clear
 
@@ -49,16 +49,22 @@ disp('Second Diff = M2 A x + M2 B u')
 m2a = M2 * A
 m2b = M2 * B
 
-nm2b = [0 1 0;0 0 1; 0 1 1];
+nm2b = [0 1 0;0 0 1; 0 -0.9387  1.9038];
 
-nm2b*m2b
+MM=m2a
+
+sS= MM(2:3,3:4)
+
+sol=[-B(4); B(3)]
+
+hope = inv(sS)*sol
 
 M3 = [nm2b*m2a ; C]
 
 m3a = M3*A
 m3b = M3*B
 
-%
+
 %disp(' ')
 %disp('Third Diff = C A^3 x + C A^2 B u')
 %
